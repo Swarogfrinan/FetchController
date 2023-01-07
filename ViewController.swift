@@ -27,7 +27,7 @@ class ViewController: UIViewController {
         return tableView
     }()
     
-   //MARK: LifeCycle
+    //MARK: LifeCycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +45,7 @@ class ViewController: UIViewController {
     //MARK: Private methods
     
     private func setupNavigationBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAddButton))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addAlert))
     }
     
     private func setupView() {
@@ -79,14 +79,14 @@ class ViewController: UIViewController {
     }
     
     private func fetchData() {
-//        guard let context = self.context else { return }
-//        let request = Organization.fetchRequest()
-//        let sortDescription = NSSortDescriptor(key: "name", ascending: true)
-//        request.sortDescriptors = [sortDescription]
+        //        guard let context = self.context else { return }
+        //        let request = Organization.fetchRequest()
+        //        let sortDescription = NSSortDescriptor(key: "name", ascending: true)
+        //        request.sortDescriptors = [sortDescription]
         
         do {
             try self.fetchResultController?.performFetch()
-//            self.organizations = try context.fetch(request)
+            //            self.organizations = try context.fetch(request)
             self.tableView.reloadData()
         } catch {
             fatalError("Cant fetch data from DB")
@@ -106,13 +106,54 @@ class ViewController: UIViewController {
             fatalError("Failed to save context in DB")
         }
     }
+    
+    @objc  private func addAlert() {
+        
+        let alertController = UIAlertController(title: "Add New Company", message: "", preferredStyle: UIAlertController.Style.alert)
+        alertController.addTextField { (textField : UITextField!) -> Void in
+            textField.placeholder = "Enter First Name"
+        }
+        
+        let saveAction = UIAlertAction(title: "Save", style: UIAlertAction.Style.default, handler: { alert -> Void in
+            let firstTextField = alertController.textFields![0] as UITextField
+            let secondTextField = alertController.textFields![1] as UITextField
+            secondTextField.keyboardType = .numberPad
+            
+            
+            let numberOfEmployees = Int(secondTextField.text!)
+            guard let context = self.context else { return }
+            let organization = Organization(context: context)
+            
+            organization.name = firstTextField.text
+            organization.employeesNumber = Int64(numberOfEmployees ?? 0)
+            
+            do {
+                try context.save()
+            } catch {
+                fatalError("Failed to save context in DB")
+            }
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.default, handler: {
+            (action : UIAlertAction!) -> Void in })
+        alertController.addTextField { (textField : UITextField!) -> Void in
+            textField.placeholder = "Enter a employes count"
+            
+        }
+        
+  
+        alertController.addAction(saveAction)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
 }
 
 //MARK: TableView DataSource
 
 extension ViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return organizations.count
+        //        return organizations.count
         guard let sections = self.fetchResultController?.sections else { return 0 }
         
         return sections[section].numberOfObjects
@@ -120,12 +161,12 @@ extension ViewController : UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-       let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "DefaultCellID")
-//        let organization = self.organizations[indexPath.row]
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "DefaultCellID")
+        //        let organization = self.organizations[indexPath.row]
         guard let organization = self.fetchResultController?.object(at: indexPath) else {return cell}
         var content = cell.defaultContentConfiguration()
-            content.text = organization.name
-            content.secondaryText = "Employees : \(organization.employees?.count ?? 0)"
+        content.text = organization.name
+        content.secondaryText = "Employees : \(organization.employeesNumber)"
         cell.contentConfiguration = content
         return cell
     }
@@ -134,16 +175,16 @@ extension ViewController : UITableViewDataSource {
 //MARK: UITableViewDelegate
 
 extension ViewController : UITableViewDelegate {
- 
+    
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         guard let context = self.context else {return}
         guard let organization = self.fetchResultController?.object(at: indexPath) else {return}
         if editingStyle == .delete {
             do {
                 context.delete(organization)
-            try context.save()
+                try context.save()
                 print("Delete cell by \(organization.name)")
-//
+                //
             } catch {
                 fatalError("Cant deleted cell in tableView")
             }
@@ -158,7 +199,7 @@ extension ViewController : NSFetchedResultsControllerDelegate {
         self.tableView.beginUpdates()
     }
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-       
+        
         switch type {
         case .insert:
             guard let newIndexPath = newIndexPath else { return }
