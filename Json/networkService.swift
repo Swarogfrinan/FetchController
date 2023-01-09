@@ -3,7 +3,7 @@ import Foundation
  protocol NetworkServiceProtocol {
 
      func getData(completion: @escaping (Result<DataModel?, Error>) -> Void)
-//     func getPlanetDescription(completion: @escaping (Result<PlanetModel?, Error>) -> Void)
+     func getPlanetDescription(completion: @escaping (Result<PlanetModel?, Error>) -> Void)
 //     func getResident(for stringURL: String, completion: @escaping (Result<ResidentModel?, Error>) -> Void)
 
  }
@@ -40,28 +40,28 @@ struct NetworkService: NetworkServiceProtocol {
         task.resume()
     }
     
-    //     func getPlanetDescription(completion: @escaping (Result<PlanetModel?, Error>) -> Void) {
-    //         guard let url = URL(string: "https://swapi.dev/api/planets/1") else { return }
-    //
-    //         let session = URLSession.shared
-    //         let task = session.dataTask(with: url) { data, response, error in
-    //             if let error = error {
-    //                 completion(.failure(error))
-    //             }
-    //
-    //             if let data = data {
-    //                 do {
-    //                     let model = try JSONDecoder().decode(PlanetModel.self, from: data)
-    //                     completion(.success(model))
-    //                 } catch {
-    //                     completion(.success(nil))
-    //                 }
-    //             }
-    //         }
-    //
-    //         task.resume()
-    //     }
-    //
+         func getPlanetDescription(completion: @escaping (Result<PlanetModel?, Error>) -> Void) {
+             guard let url = URL(string: "https://swapi.dev/api/planets/1") else { return }
+    
+             let session = URLSession.shared
+             let task = session.dataTask(with: url) { data, response, error in
+                 if let error = error {
+                     completion(.failure(error))
+                 }
+    
+                 if let data = data {
+                     do {
+                         let model = try JSONDecoder().decode(PlanetModel.self, from: data)
+                         completion(.success(model))
+                     } catch {
+                         completion(.success(nil))
+                     }
+                 }
+             }
+    
+             task.resume()
+         }
+    
     //     func getResident(for stringURL: String, completion: @escaping (Result<ResidentModel?, Error>) -> Void) {
     //         guard let url = URL(string: stringURL) else { return }
     //

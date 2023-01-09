@@ -38,10 +38,10 @@ class InfoViewController: UIViewController {
 //        tableView.delegate = self
 //        tableView.dataSource = self
         setupLayout()
-        getData()
-//        group.enter()
-        //        getPlanetDescription()
-//        group.wait()
+//        getData()
+        group.enter()
+                getPlanetDescription()
+        group.wait()
         //        getResident(for: links)
         tableView.reloadData()
     }
@@ -104,22 +104,24 @@ private extension InfoViewController {
         }
     }
     
-//    func getPlanetDescription() {
-//        service.getPlanetDescription { [weak self] result in
-//            switch result {
-//            case .success(let model):
-//                guard let model = model else { return }
-//
-//                self?.links.append(contentsOf: model.residents)
-//                DispatchQueue.main.async {
-//                    self?.orbitalPeriodLabel.text = "Planet Tatuin period: \(model.orbitalPeriod)"
-//                }
-//            case .failure(let error):
-//                print(error.localizedDescription)
-//            }
-//            self?.group.leave()
-//        }
-//    }
+    func getPlanetDescription() {
+        service.getPlanetDescription { [weak self] result in
+            switch result {
+            case .success(let model):
+                guard let model = model else { return }
+
+                self?.links.append(contentsOf: model.residents)
+                DispatchQueue.main.async {
+                    self?.dataLabel.text = "Planet Tatuin period: \(model.orbitalPeriod)"
+                    self?.titleLabel.text = "Name of the planet\(model.name)"
+                    self?.idLabel.text = "population on planet \(model.population)"
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+            self?.group.leave()
+        }
+    }
 //
 //    func getResident(for links: [String]) {
 //        links.forEach { link in
