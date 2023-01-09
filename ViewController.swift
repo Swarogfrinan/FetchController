@@ -46,6 +46,7 @@ class ViewController: UIViewController {
     
     private func setupNavigationBar() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addAlert))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .fastForward, target: self, action: #selector(goToNextVc))
     }
     
     private func setupView() {
@@ -146,6 +147,13 @@ class ViewController: UIViewController {
         alertController.addAction(cancelAction)
         
         self.present(alertController, animated: true, completion: nil)
+    }
+    
+    @objc private func goToNextVc() {
+        let infoViewController = InfoViewController(service: NetworkService())
+        let navigationController = UINavigationController(rootViewController: infoViewController)
+        
+        present(navigationController, animated: true, completion: nil)
     }
 }
 
